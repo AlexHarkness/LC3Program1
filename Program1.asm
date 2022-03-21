@@ -1,0 +1,7 @@
+.ORIG x3000
+LEA R0, INTRO
+
+INTRO .STRINGZ "yo wadap";
+PUTS
+
+.END
