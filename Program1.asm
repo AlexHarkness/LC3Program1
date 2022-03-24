@@ -4,7 +4,7 @@ TOP
 ;new line
 AND R3 R3 #0
 AND R4 R4 #0 ; N1
-ADD R4,R4,#-1
+ADD R4,R4,#-1 ;SETS R4 TO NEG, WILL BI USED AS FLAG FOR WHICH REG TO STORE INPUT IN
 AND R5 R5 #0 ; N2
 AND R0 R0 #0
 ADD R0 R0 #10
@@ -19,12 +19,17 @@ GET_UR_NUMBER
 
 GET_FIRST_CHAR;grab and echo
 GETC
-OUT
-;converting ascii to binary
-;checking for quit
+
+ADD R1, R0, #-10 ;checks if return is pressed before out
+BRZ SKIPENTER
 LD R6, ASCII_Q ;Q
 ADD R1, R0, R6 ;Q
 BRZ END_GAME ;Q
+OUT
+SKIPENTER
+;converting ascii to binary
+;checking for quit
+
 LD R6, ASCII ;<48
 ADD R0, R0, R6 ;<48
 BRN GET_FIRST_CHAR ;<48
@@ -36,14 +41,14 @@ BRP RETURN ;if r2 > 1
 
 GET_SECOND_CHAR;grab and echo
 GETC
-OUT
-;converting ascii to binary
-;checking for quit
+ADD R1, R0, #-10 ;checks if return is pressed before out
+BRZ RETURN
 LD R6, ASCII_Q
 ADD R1, R0, R6
-BRZ END_GAME
-ADD R1, R0, #-10
-BRZ RETURN
+BRZ END_GAME ;checking for quit
+OUT
+;converting ascii to binary
+
 LD R6, ASCII
 ADD R0, R0, R6
 BRN GET_SECOND_CHAR
@@ -55,11 +60,11 @@ BRZ RETURN
 ADD R2, R2, #9 ; adds 9 to ajust for 10s place
 
 RETURN
-ADD R4, R4, #0
-BRN FIRST_TIME
+ADD R4, R4, #0 ; CHECKS R4 NEGATIVEFLAG
+BRN FIRST_TIME 
 BR SECOND_TIME
 FIRST_TIME
-    ADD R4, R2, R3
+    ADD R4, R2, R3 ; R4 CHANGED FLAG GONE
     AND R0 R0 #0
     ADD R0 R0 #10
     OUT
@@ -84,36 +89,76 @@ R4_GREATER_R5
     ADD R4, R0, #0
 NEXT ; 5>4
 
-ADD R0, R4, #0 ;set r0 to r4
-AND R4, R4, #0 ; clear r4
-ADD R4, R4, #-1; r4 = -1
-DIV1
-ADD R4, R4, #1
-ADD R0, R0, #-2
-BRP DIV1
+ADD R2, R4, #0
+BRZ EVEN1
 
-ADD R0, R5, #0
-AND R5, R5, #0
-DIV2
-ADD R5, R5, #1
-ADD R0, R0, #-2
-BRP DIV2
+MIN
+    ADD R2, R2, #-2
+    BRN ODD1
+    BRP MIN
+EVEN1
+    
+    NOT R7, R4     ;Here we do a check to see if we have an even, even case and send to end if so
+    ADD R7, R7, #1
+    ADD R7, R7, R5
+    BRZ ODDS_SUMMED
+    ADD R4, R4, #1
+ODD1
 
+ADD R3, R5, #0
+BRZ EVEN2
+MAX
+    ADD R3, R3, #-2
+    BRN ODD2
+    BRP MAX
+EVEN2
+    ADD R5, R5, #-1
+ODD2
+    NOT R5, R5
+    ADD R5, R5, #1
+    AND R2, R2, #0
+SUMNEXT
+    ADD R2, R2, R4
+    ADD R4, R4, #2
+    ADD R7, R4, R5
+    BRNZ SUMNEXT
+ODDS_SUMMED
+    AND R3, R3, #0
+    BR DIVSTART
+    DIV
+        ADD R3, R3, #1 ;R4 IS TENS DIG
+        ADD R2, R2, #-10 
+        DIVSTART
+        ADD R7, R2, #-9
+        BRP DIV
+        ;R2 IS ONES DIG
+AND R0, R0, #0
+ADD R0, R0, #10
+OUT
+LD R1, NUMB
 
-
-
-
-
-
+ADD R3, R3, #0
+BRZ SKIP_D1
+ADD R0, R3, R1
+OUT
+SKIP_D1
+ADD R0, R2, R1
+OUT
+BR TOP
 
 
 END_GAME
+AND R0, R0, #0
+ADD R0, R0, #10
+OUT
+LEA R0, END_STRING
+PUTS
 HALT
 
 ENTER_FIRST .stringz "Enter Start Number (0-16): "
-ENTER_SECOND .STRINGZ "ENTER SECOND NUMBER "
-ASCII_Q .FILL #-81
+ENTER_SECOND .STRINGZ "Enter End Number (0-16): "
+END_STRING .STRINGZ "Thank you for playing!"
+ASCII_Q .FILL #-113
 ASCII .FILL #-48
-
-
+NUMB .FILL #48
 .END
