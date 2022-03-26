@@ -65,7 +65,6 @@ BRN FIRST_TIME
 BR SECOND_TIME
 FIRST_TIME
     ADD R4, R2, R3 ; R4 CHANGED FLAG GONE
-    AND R3, R3, #0
     AND R0 R0 #0
     ADD R0 R0 #10
     OUT
@@ -73,7 +72,7 @@ FIRST_TIME
     PUTS
     BR GET_UR_NUMBER 
 SECOND_TIME
-    ADD R5, R2, R3
+    ADD R5, R2, R3 ;stores 
 
 NOT R5, R5
 ADD R5, R5, #1
@@ -123,20 +122,22 @@ SUMNEXT
     ADD R4, R4, #2
     ADD R7, R4, R5
     BRNZ SUMNEXT
-ODDS_SUMMED
-    AND R3, R3, #0
-    BR DIVSTART
+ODDS_SUMMED          ;we have summed odds and now ON TO OUTPUT CODE
+    AND R3, R3, #0  ; clears R3
+    BR DIVSTART ; STARTS our division by ten uses jump to jump in after the first divide in case the num <10
     DIV
         ADD R3, R3, #1 ;R4 IS TENS DIG
-        ADD R2, R2, #-10 
+        ADD R2, R2, #-10 ; subs 10
         DIVSTART
-        ADD R7, R2, #-9
-        BRP DIV
+        ADD R7, R2, #-9 ; checks if it is less than 9
+        BRP DIV ; repeates if positive
         ;R2 IS ONES DIG
 AND R0, R0, #0
-ADD R0, R0, #10
+ADD R0, R0, #10 ;new line code
 OUT
-LD R1, NUMB
+LEA R0, ENDNUMB  
+PUTS
+LD R1, NUMB 
 
 ADD R3, R3, #0
 BRZ SKIP_D1
@@ -155,7 +156,7 @@ OUT
 LEA R0, END_STRING
 PUTS
 HALT
-
+ENDNUMB .STRINGZ "The sum of every odd number between the two numbers is: "
 ENTER_FIRST .stringz "Enter Start Number (0-16): "
 ENTER_SECOND .STRINGZ "Enter End Number (0-16): "
 END_STRING .STRINGZ "Thank you for playing!"
