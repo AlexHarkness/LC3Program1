@@ -70,6 +70,7 @@ RETURN
     BR SECOND_TIME
 FIRST_TIME
     ADD R4, R2, R3 ; R4 CHANGED FLAG GONE
+    AND R3,R3,#0 ; FIXES THE STUPID ERROR!!!
     AND R0 R0 #0
     ADD R0 R0 #10
     OUT
@@ -164,7 +165,7 @@ END_GAME
 
 ;ALL VALUES THAT WILL BE LOADED
     ENDNUMB .STRINGZ "The sum of every odd number between the two numbers is: "
-    ENTER_FIRST .stringz "Enter Start Number (0-16): "
+    ENTER_FIRST .STRINGZ "Enter Start Number (0-16): "
     ENTER_SECOND .STRINGZ "Enter End Number (0-16): "
     END_STRING .STRINGZ "Thank you for playing!"
     ASCII_Q .FILL #-113
