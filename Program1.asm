@@ -114,19 +114,19 @@ MAX
 EVEN2
     ADD R5, R5, #-1
 ODD2
-    NOT R5, R5
-    ADD R5, R5, #1
-    AND R2, R2, #0
-SUMNEXT
-    ADD R2, R2, R4
-    ADD R4, R4, #2
-    ADD R7, R4, R5
+    NOT R5, R5 
+    ADD R5, R5, #1 ;r5 is the negative of my max
+    AND R2, R2, #0 
+SUMNEXT     ;this is my sum code
+    ADD R2, R2, R4 ;r2 is sum, add r2 + the odd we are on
+    ADD R4, R4, #2 ; r4 is odd ffset  we increase it by 2 each loop
+    ADD R7, R4, R5; use trash reg r7 to test if r4 <= max, if so we loop to top
     BRNZ SUMNEXT
 ODDS_SUMMED          ;we have summed odds and now ON TO OUTPUT CODE
     AND R3, R3, #0  ; clears R3
     BR DIVSTART ; STARTS our division by ten uses jump to jump in after the first divide in case the num <10
     DIV
-        ADD R3, R3, #1 ;R4 IS TENS DIG
+        ADD R3, R3, #1 ;R3 IS TENS DIG
         ADD R2, R2, #-10 ; subs 10
         DIVSTART
         ADD R7, R2, #-9 ; checks if it is less than 9
@@ -135,17 +135,17 @@ ODDS_SUMMED          ;we have summed odds and now ON TO OUTPUT CODE
 AND R0, R0, #0
 ADD R0, R0, #10 ;new line code
 OUT
-LEA R0, ENDNUMB  
+LEA R0, ENDNUMB  ;loads and prints resualt prompt
 PUTS
-LD R1, NUMB 
+LD R1, NUMB ; ascii offset
 
-ADD R3, R3, #0
+ADD R3, R3, #0 ;checks if tens place is zero if so skips
 BRZ SKIP_D1
-ADD R0, R3, R1
-OUT
+ADD R0, R3, R1 ; adds offset
+OUT ;prints
 SKIP_D1
-ADD R0, R2, R1
-OUT
+ADD R0, R2, R1 ;adds 1s place and offset
+OUT ;printss
 BR TOP
 
 
